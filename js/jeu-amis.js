@@ -209,7 +209,7 @@ const JeuAmis = {
     }
   },
 
-  /* ---- Quand Benjamin clique sur un nombre ---- */
+  /* ---- Quand Benji clique sur un nombre ---- */
   repondre: function (bouton, choix, bonneReponse) {
     if (!this.peutRepondre) { return; }
     this.peutRepondre = false;

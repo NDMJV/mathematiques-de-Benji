@@ -6,7 +6,7 @@
      - le NIVEAU (1 à 8), gardé en mémoire d'une partie à l'autre,
        qui décide des opérations et de la taille des nombres
      - la SÉRIE en cours, qui pousse temporairement d'un cran
-       quand Benjamin enchaîne les bonnes réponses
+       quand Benji enchaîne les bonnes réponses
    ========================================================= */
 
 const JeuCourse = {
@@ -124,7 +124,7 @@ const JeuCourse = {
     this.afficherSaisie();
 
     /* Astuce sympa : dès que le nombre tapé est le bon, on valide tout seul.
-       Comme ça Benjamin n'a pas besoin d'appuyer sur OK à chaque fois. */
+       Comme ça Benji n'a pas besoin d'appuyer sur OK à chaque fois. */
     if (this.saisie !== '' && Number(this.saisie) === this.calcul.resultat) {
       this.verifier();
     }

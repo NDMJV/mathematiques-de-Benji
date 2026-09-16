@@ -7,7 +7,7 @@
      - difficile (50 % ou moins) → on redescend d'un niveau
      - entre les deux            → on reste, on consolide
 
-   Benjamin n'a rien à régler : le jeu se met à son niveau tout seul,
+   Benji n'a rien à régler : le jeu se met à son niveau tout seul,
    et il ne peut jamais rester bloqué devant une porte fermée.
    ========================================================= */
 

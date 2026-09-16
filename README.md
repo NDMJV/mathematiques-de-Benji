@@ -1,6 +1,6 @@
-# 🧮 Mathématiques de Singapour
+# 🧮 Les maths de Benji
 
-Quatre petits jeux de maths pour Benjamin (7 ans), inspirés de la
+Quatre petits jeux de maths pour Benji (7 ans), inspirés de la
 **méthode de Singapour** : on manipule, on dessine, puis on calcule.
 
 Pas de logiciel à installer, pas de compilation : c'est du HTML, du CSS
@@ -30,7 +30,7 @@ Chaque jeu a **8 niveaux**, et le jeu se règle tout seul :
 - une partie à **50 % ou moins** → on redescend d'un niveau
 - entre les deux → on reste, on consolide
 
-Benjamin n'a rien à choisir et ne peut jamais rester bloqué devant une
+Benji n'a rien à choisir et ne peut jamais rester bloqué devant une
 porte fermée : le jeu se met à son niveau, tout seul, et s'en souvient
 d'une fois sur l'autre. Le niveau atteint s'affiche sur chaque carte de
 l'accueil.
@@ -119,7 +119,7 @@ chargé **avant** les jeux, parce que les jeux se servent de ses fonctions.
 ## ✏️ Des idées pour bidouiller (par ordre de difficulté)
 
 ### 1. Changer le prénom affiché sur l'accueil
-Dans `index.html`, cherche `Salut <strong>Benjamin</strong>` et remplace.
+Dans `index.html`, cherche `Salut <strong>Benji</strong>` et remplace.
 
 ### 2. Rendre la course plus longue ou plus courte
 Dans `js/jeu-course.js`, tout en haut de l'objet :
@@ -162,7 +162,7 @@ Avec **GitHub Pages**, en 4 clics :
 4. Clique **Save**
 
 Une minute plus tard, le jeu est en ligne à l'adresse
-`https://NDMJV.github.io/mathematiques-de-singapour/` — et Benjamin peut
+`https://ndmjv.github.io/mathematiques-de-Benji/` — et Benji peut
 y jouer depuis n'importe quel téléphone ou tablette.
 
 > ⚠️ Pour que GitHub Pages fonctionne, le dépôt doit être **public**

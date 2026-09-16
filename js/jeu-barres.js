@@ -21,7 +21,7 @@ const JeuBarres = {
   /* Chaque prénom vient avec son pronom (il / elle) pour que les
      phrases du jeu soient écrites dans un français correct. */
   PRENOMS: [
-    { nom: 'Benjamin', pronom: 'il'   },
+    { nom: 'Benji', pronom: 'il'   },
     { nom: 'Tom',      pronom: 'il'   },
     { nom: 'Hugo',     pronom: 'il'   },
     { nom: 'Léa',      pronom: 'elle' },
@@ -360,7 +360,7 @@ const JeuBarres = {
     annoncer(cEstJuste ? 'Bravo' : 'La réponse était ' + probleme.reponse);
 
     /* On redessine les barres avec la réponse visible : c'est là
-       que Benjamin voit POURQUOI c'est ça. */
+       que Benji voit POURQUOI c'est ça. */
     const anciennes = this.zone.querySelector('.zone-barres');
     if (anciennes) {
       anciennes.outerHTML = this.dessinerBarres(probleme, true);
