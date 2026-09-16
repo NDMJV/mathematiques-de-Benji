@@ -1,0 +1,440 @@
+/* =========================================================
+   Mathématiques de Singapour — feuille de style
+   Tout est en français pour que ce soit facile à relire :-)
+   ========================================================= */
+
+/* --- Les couleurs du jeu, rangées au même endroit --- */
+:root {
+  --fond:            #fef6e4;
+  --fond-carte:      #ffffff;
+  --encre:           #1f2a44;
+  --encre-douce:     #5a6785;
+
+  --bleu:            #3b82f6;
+  --violet:          #8b5cf6;
+  --rose:            #ec4899;
+  --vert:            #22c55e;
+  --orange:          #f97316;
+  --jaune:           #facc15;
+  --rouge:           #ef4444;
+
+  --rayon:           22px;
+  --rayon-petit:     14px;
+  --ombre:           0 6px 0 rgba(31, 42, 68, .15);
+  --ombre-haute:     0 10px 30px rgba(31, 42, 68, .18);
+  --police: "Comic Sans MS", "Chalkboard SE", "Segoe UI Rounded",
+            "Trebuchet MS", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--police);
+  background: var(--fond);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(139, 92, 246, .10) 0 24%, transparent 24%),
+    radial-gradient(circle at 88% 12%, rgba(59, 130, 246, .10) 0 20%, transparent 20%),
+    radial-gradient(circle at 78% 88%, rgba(236, 72, 153, .10) 0 24%, transparent 24%);
+  color: var(--encre);
+  min-height: 100vh;
+  padding: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+.invisible {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+.cachee { display: none !important; }
+
+/* =========================================================
+   BARRE DU HAUT
+   ========================================================= */
+.barre-haut {
+  display: flex; align-items: center; gap: 12px;
+  max-width: 900px; margin: 0 auto 18px;
+}
+.bouton-retour {
+  font-family: var(--police); font-size: 1rem; font-weight: bold;
+  background: var(--fond-carte); color: var(--encre);
+  border: 3px solid var(--encre); border-radius: 999px;
+  padding: 10px 18px; cursor: pointer; box-shadow: var(--ombre);
+  transition: transform .12s ease;
+}
+.bouton-retour:hover  { transform: translateY(-2px); }
+.bouton-retour:active { transform: translateY(3px); box-shadow: none; }
+
+.titre-jeu { flex: 1; font-size: 1.15rem; font-weight: bold; text-align: center; }
+
+.compteur-etoiles {
+  background: var(--jaune); border: 3px solid var(--encre); border-radius: 999px;
+  padding: 8px 16px; font-weight: bold; font-size: 1.05rem;
+  box-shadow: var(--ombre); white-space: nowrap;
+}
+
+/* =========================================================
+   ÉCRANS
+   ========================================================= */
+.ecran { display: none; }
+.ecran.active { display: block; animation: apparition .3s ease; }
+
+@keyframes apparition {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* =========================================================
+   ACCUEIL
+   ========================================================= */
+.accueil-entete { text-align: center; max-width: 900px; margin: 10px auto 26px; }
+.accueil-emoji  { font-size: 4rem; animation: flotte 3s ease-in-out infinite; }
+
+@keyframes flotte {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-12px) rotate(3deg); }
+}
+
+.accueil-entete h1 {
+  font-size: clamp(1.9rem, 7vw, 3rem); line-height: 1.1;
+  color: var(--violet); text-shadow: 3px 3px 0 rgba(31, 42, 68, .12);
+}
+.accueil-sous    { color: var(--rose); }
+.accueil-bonjour { margin-top: 14px; font-size: 1.15rem; color: var(--encre-douce); }
+
+.grille-jeux {
+  display: grid; gap: 18px; max-width: 720px; margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.carte-jeu {
+  font-family: var(--police); text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--fond-carte); color: var(--encre);
+  border: 4px solid var(--encre); border-radius: var(--rayon);
+  padding: 22px; box-shadow: var(--ombre);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.carte-jeu:hover  { transform: translateY(-5px) rotate(-1deg); box-shadow: var(--ombre-haute); }
+.carte-jeu:active { transform: translateY(3px); box-shadow: none; }
+
+.carte-emoji  { font-size: 3rem; line-height: 1; }
+.carte-titre  { font-size: 1.3rem; font-weight: bold; }
+.carte-texte  { font-size: .95rem; color: var(--encre-douce); }
+.carte-etoiles{
+  margin-top: 8px; align-self: flex-start;
+  background: var(--jaune); border: 2px solid var(--encre); border-radius: 999px;
+  padding: 3px 12px; font-size: .9rem; font-weight: bold;
+}
+
+.carte-amis     { border-bottom: 10px solid var(--bleu); }
+.carte-course   { border-bottom: 10px solid var(--orange); }
+.carte-barres   { border-bottom: 10px solid var(--rose); }
+.carte-monstres { border-bottom: 10px solid var(--vert); }
+
+.accueil-pied {
+  text-align: center; margin: 30px auto 10px; color: var(--encre-douce);
+  display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
+}
+.bouton-mini {
+  font-family: var(--police); font-size: .85rem; cursor: pointer;
+  background: transparent; color: var(--encre-douce);
+  border: 2px solid var(--encre-douce); border-radius: 999px; padding: 5px 14px;
+}
+.bouton-mini:hover { background: var(--encre-douce); color: #fff; }
+
+/* =========================================================
+   ZONE DE JEU (commune aux 4 jeux)
+   ========================================================= */
+.zone-jeu {
+  max-width: 640px; margin: 0 auto;
+  background: var(--fond-carte);
+  border: 4px solid var(--encre); border-radius: var(--rayon);
+  padding: 26px 22px; box-shadow: var(--ombre-haute);
+}
+
+.consigne {
+  text-align: center; font-size: 1.25rem; font-weight: bold;
+  margin-bottom: 20px; line-height: 1.4;
+}
+.consigne .surligne { color: var(--violet); }
+
+/* --- Les boutons de réponse --- */
+.grille-reponses {
+  display: grid; gap: 12px; margin-top: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+}
+.bouton-reponse {
+  font-family: var(--police); font-size: 1.7rem; font-weight: bold;
+  min-height: 68px; cursor: pointer;
+  background: var(--fond-carte); color: var(--encre);
+  border: 4px solid var(--encre); border-radius: var(--rayon-petit);
+  box-shadow: 0 5px 0 rgba(31, 42, 68, .2);
+  transition: transform .1s ease, background .2s ease;
+}
+.bouton-reponse:hover:not(:disabled)  { transform: translateY(-3px); background: #f1f5ff; }
+.bouton-reponse:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.bouton-reponse:disabled              { cursor: default; opacity: .55; }
+
+.bouton-reponse.juste {
+  background: var(--vert); color: #fff; border-color: #15803d;
+  opacity: 1; animation: saute .45s ease;
+}
+.bouton-reponse.faux {
+  background: var(--rouge); color: #fff; border-color: #b91c1c;
+  opacity: 1; animation: tremble .4s ease;
+}
+
+@keyframes saute {
+  0%, 100% { transform: scale(1); }
+  40%      { transform: scale(1.22) rotate(-4deg); }
+}
+@keyframes tremble {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-9px); }
+  40%      { transform: translateX(9px); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
+}
+
+/* --- Message de réaction --- */
+.reaction {
+  text-align: center; font-size: 1.25rem; font-weight: bold;
+  min-height: 2em; margin-top: 18px;
+}
+.reaction.bien   { color: var(--vert); }
+.reaction.rate   { color: var(--rouge); }
+
+/* --- Bandeau d'infos (score, temps, manche) --- */
+.bandeau {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px;
+}
+.pastille {
+  background: var(--fond); border: 3px solid var(--encre); border-radius: 999px;
+  padding: 6px 16px; font-weight: bold; font-size: .95rem;
+}
+.pastille.alerte { background: var(--rouge); color: #fff; animation: pulse .6s ease infinite; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.09); }
+}
+
+/* --- Barre de progression --- */
+.progression {
+  height: 16px; background: #e6e9f2; border: 3px solid var(--encre);
+  border-radius: 999px; overflow: hidden; margin-bottom: 20px;
+}
+.progression-remplie {
+  height: 100%; width: 0%; background: var(--vert);
+  transition: width .4s ease;
+}
+
+/* =========================================================
+   JEU 1 — LES AMIS DES NOMBRES
+   ========================================================= */
+/* Le cadre de dix : 2 rangées de 5 cases, l'outil clé de Singapour */
+.cadre-dix {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+  width: min(330px, 100%); margin: 0 auto 22px;
+  border: 4px solid var(--encre); border-radius: 12px;
+  padding: 4px; background: var(--encre);
+}
+.case-cadre {
+  aspect-ratio: 1; background: var(--fond-carte);
+  display: grid; place-items: center; font-size: 1.8rem;
+}
+.case-cadre.pleine  { background: #dbeafe; }
+.case-cadre .jeton  { animation: saute .35s ease; }
+.case-cadre.trou    { background: #fff7cd; }
+
+/* Le schéma « nombre-parties » (number bond) */
+.schema-nombre { text-align: center; margin: 22px auto 6px; }
+.bulle {
+  display: inline-grid; place-items: center;
+  width: 78px; height: 78px; border-radius: 50%;
+  border: 4px solid var(--encre); background: var(--fond-carte);
+  font-size: 2rem; font-weight: bold;
+}
+.bulle.tout     { background: var(--violet); color: #fff; }
+.bulle.connue   { background: var(--bleu);   color: #fff; }
+.bulle.mystere  { background: var(--jaune);  }
+.bulle.trouvee  { background: var(--vert);   color: #fff; animation: saute .45s ease; }
+.branches { display: flex; justify-content: center; gap: 46px; margin: 4px 0; }
+.branche  { width: 4px; height: 30px; background: var(--encre); }
+.branche.gauche { transform: rotate(28deg); }
+.branche.droite { transform: rotate(-28deg); }
+.parties  { display: flex; justify-content: center; gap: 30px; }
+
+/* =========================================================
+   JEU 2 — LA COURSE AUX ADDITIONS
+   ========================================================= */
+.calcul-geant {
+  text-align: center; font-size: clamp(2.4rem, 12vw, 4rem); font-weight: bold;
+  margin: 10px 0 20px; letter-spacing: 2px;
+}
+.ecran-saisie {
+  text-align: center; font-size: 3rem; font-weight: bold;
+  min-height: 80px; line-height: 80px;
+  border: 4px dashed var(--encre-douce); border-radius: var(--rayon-petit);
+  background: var(--fond); margin-bottom: 16px;
+}
+.ecran-saisie.juste { border-style: solid; border-color: var(--vert); color: var(--vert); }
+.ecran-saisie.faux  { border-style: solid; border-color: var(--rouge); color: var(--rouge); }
+
+.pave-numerique {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.touche {
+  font-family: var(--police); font-size: 1.8rem; font-weight: bold;
+  min-height: 62px; cursor: pointer;
+  background: var(--fond-carte); border: 4px solid var(--encre);
+  border-radius: var(--rayon-petit); box-shadow: 0 5px 0 rgba(31, 42, 68, .2);
+}
+.touche:active { transform: translateY(3px); box-shadow: none; }
+.touche.effacer { background: #ffe4e6; }
+.touche.valider { background: var(--vert); color: #fff; border-color: #15803d; }
+
+.serie { font-size: 1rem; color: var(--orange); font-weight: bold; text-align: center; }
+
+/* =========================================================
+   JEU 3 — LES BARRES MAGIQUES
+   ========================================================= */
+.enonce {
+  background: var(--fond); border-left: 8px solid var(--rose);
+  border-radius: var(--rayon-petit); padding: 16px 18px;
+  font-size: 1.1rem; line-height: 1.55; margin-bottom: 22px;
+}
+.zone-barres { margin: 18px 0 8px; }
+.ligne-barre { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.etiquette-barre {
+  width: 88px; flex-shrink: 0; font-size: .95rem; font-weight: bold;
+  text-align: right; color: var(--encre-douce);
+}
+.barre {
+  height: 46px; border: 3px solid var(--encre); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: bold; font-size: 1.15rem;
+  transition: width .6s ease; overflow: hidden; white-space: nowrap;
+}
+.barre.bleue   { background: var(--bleu); }
+.barre.rose    { background: var(--rose); }
+.barre.jaune   { background: var(--jaune); color: var(--encre); }
+.barre.inconnue{
+  background: repeating-linear-gradient(45deg, #e2e8f0, #e2e8f0 9px, #cbd5e1 9px, #cbd5e1 18px);
+  color: var(--encre);
+}
+.accolade {
+  text-align: center; font-size: 1rem; color: var(--encre-douce);
+  margin-left: 98px; border-top: 3px dashed var(--encre-douce);
+  padding-top: 6px; font-weight: bold;
+}
+
+/* =========================================================
+   JEU 4 — LES MONSTRES GOURMANDS
+   ========================================================= */
+.monstre {
+  text-align: center; font-size: 5.5rem; line-height: 1;
+  transition: transform .4s ease; margin-bottom: 6px;
+}
+.monstre.mange   { animation: croque .6s ease; }
+.monstre.grandit { animation: grandir .8s ease; }
+
+@keyframes croque {
+  0%, 100% { transform: scale(1); }
+  30%      { transform: scale(1.3) rotate(-8deg); }
+  60%      { transform: scale(.9) rotate(8deg); }
+}
+@keyframes grandir {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.35); }
+}
+
+.bulle-parole {
+  position: relative; max-width: 330px; margin: 0 auto 22px;
+  background: var(--fond); border: 4px solid var(--encre);
+  border-radius: var(--rayon); padding: 14px 18px;
+  text-align: center; font-size: 1.15rem; font-weight: bold;
+}
+.bulle-parole::after {
+  content: ""; position: absolute; top: -16px; left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent; border-bottom-color: var(--encre);
+}
+
+.ventre {
+  display: flex; justify-content: center; gap: 5px;
+  flex-wrap: wrap; margin-bottom: 16px; min-height: 30px;
+}
+.ventre .bonbon { font-size: 1.5rem; animation: saute .35s ease; }
+
+.assiette {
+  font-family: var(--police); cursor: pointer;
+  background: #fff7ed; border: 4px solid var(--encre); border-radius: 50% 50% 46% 46%;
+  padding: 18px 10px; font-size: 1.5rem; font-weight: bold;
+  box-shadow: 0 5px 0 rgba(31, 42, 68, .2);
+}
+.assiette:hover:not(:disabled)  { transform: translateY(-4px); background: #ffedd5; }
+.assiette:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.assiette.juste { background: var(--vert); color: #fff; }
+.assiette.faux  { background: var(--rouge); color: #fff; }
+
+/* =========================================================
+   ÉCRAN DE FIN DE PARTIE
+   ========================================================= */
+.fin-partie   { text-align: center; padding: 10px 0; }
+.fin-emoji    { font-size: 5rem; animation: saute .7s ease; }
+.fin-titre    { font-size: 1.9rem; margin: 10px 0; color: var(--violet); }
+.fin-score    { font-size: 1.25rem; color: var(--encre-douce); margin-bottom: 8px; }
+.fin-etoiles  { font-size: 2.4rem; letter-spacing: 6px; margin: 14px 0 22px; }
+
+.boutons-fin { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.bouton-gros {
+  font-family: var(--police); font-size: 1.15rem; font-weight: bold; cursor: pointer;
+  background: var(--violet); color: #fff;
+  border: 4px solid var(--encre); border-radius: 999px;
+  padding: 14px 30px; box-shadow: var(--ombre);
+}
+.bouton-gros.secondaire { background: var(--fond-carte); color: var(--encre); }
+.bouton-gros:active     { transform: translateY(3px); box-shadow: none; }
+
+/* =========================================================
+   CONFETTIS
+   ========================================================= */
+.confettis {
+  position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 50;
+}
+.confetti {
+  position: absolute; top: -20px; width: 11px; height: 11px;
+  animation: tombe linear forwards;
+}
+@keyframes tombe {
+  to { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+}
+
+/* =========================================================
+   PETITS ÉCRANS
+   ========================================================= */
+@media (max-width: 480px) {
+  body       { padding: 12px; }
+  .zone-jeu  { padding: 20px 14px; }
+  .bulle     { width: 64px; height: 64px; font-size: 1.6rem; }
+  .branches  { gap: 38px; }
+  .etiquette-barre { width: 64px; font-size: .8rem; }
+  .accolade  { margin-left: 74px; }
+}
+
+/* Respecte le réglage « moins d'animations » du système */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* La piste dans laquelle on pose les barres (jeu 3) */
+.piste { flex: 1; display: flex; gap: 4px; align-items: center; }
+.segment-etiquette {
+  font-size: .85rem; color: var(--encre-douce); font-weight: bold;
+  white-space: nowrap; margin-left: 4px;
+}

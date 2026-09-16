@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mathématiques de Singapour</title>
+  <meta name="description" content="Quatre jeux pour apprendre les maths avec la méthode de Singapour.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== BARRE DU HAUT (visible seulement dans un jeu) ===== -->
+  <header id="barre-haut" class="barre-haut cachee">
+    <button id="bouton-retour" class="bouton-retour" type="button">← Retour</button>
+    <div id="titre-jeu" class="titre-jeu"></div>
+    <div class="compteur-etoiles">
+      <span class="etoile-icone">⭐</span>
+      <span id="total-etoiles">0</span>
+    </div>
+  </header>
+
+  <main id="scene">
+
+    <!-- ===== ÉCRAN D'ACCUEIL ===== -->
+    <section id="ecran-accueil" class="ecran active">
+      <div class="accueil-entete">
+        <div class="accueil-emoji">🧮</div>
+        <h1>Mathématiques<br><span class="accueil-sous">de Singapour</span></h1>
+        <p class="accueil-bonjour">Salut <strong>Benjamin</strong> ! Choisis ton jeu 👇</p>
+      </div>
+
+      <div class="grille-jeux">
+        <button class="carte-jeu carte-amis" data-jeu="amis" type="button">
+          <span class="carte-emoji">🔟</span>
+          <span class="carte-titre">Les amis des nombres</span>
+          <span class="carte-texte">Trouve les nombres qui vont ensemble</span>
+          <span class="carte-etoiles" data-etoiles="amis">⭐ 0</span>
+        </button>
+
+        <button class="carte-jeu carte-course" data-jeu="course" type="button">
+          <span class="carte-emoji">⚡</span>
+          <span class="carte-titre">La course aux additions</span>
+          <span class="carte-texte">Réponds vite avant la fin du temps</span>
+          <span class="carte-etoiles" data-etoiles="course">⭐ 0</span>
+        </button>
+
+        <button class="carte-jeu carte-barres" data-jeu="barres" type="button">
+          <span class="carte-emoji">🍬</span>
+          <span class="carte-titre">Les barres magiques</span>
+          <span class="carte-texte">Les barres résolvent le problème</span>
+          <span class="carte-etoiles" data-etoiles="barres">⭐ 0</span>
+        </button>
+
+        <button class="carte-jeu carte-monstres" data-jeu="monstres" type="button">
+          <span class="carte-emoji">🐉</span>
+          <span class="carte-titre">Les monstres gourmands</span>
+          <span class="carte-texte">Nourris les monstres pour les faire grandir</span>
+          <span class="carte-etoiles" data-etoiles="monstres">⭐ 0</span>
+        </button>
+      </div>
+
+      <p class="accueil-pied">
+        Total : <strong id="etoiles-accueil">0</strong> étoiles ⭐
+        <button id="bouton-remise-a-zero" class="bouton-mini" type="button">Tout recommencer</button>
+      </p>
+    </section>
+
+    <!-- ===== LES 4 ÉCRANS DE JEU (remplis par le JavaScript) ===== -->
+    <section id="ecran-amis"     class="ecran"><div class="zone-jeu" id="zone-amis"></div></section>
+    <section id="ecran-course"   class="ecran"><div class="zone-jeu" id="zone-course"></div></section>
+    <section id="ecran-barres"   class="ecran"><div class="zone-jeu" id="zone-barres"></div></section>
+    <section id="ecran-monstres" class="ecran"><div class="zone-jeu" id="zone-monstres"></div></section>
+
+  </main>
+
+  <!-- Zone des confettis -->
+  <div id="confettis" class="confettis" aria-hidden="true"></div>
+
+  <!-- Messages lus à voix haute par les lecteurs d'écran -->
+  <div id="annonce" class="invisible" role="status" aria-live="polite"></div>
+
+  <!-- Les outils communs d'abord, les jeux ensuite -->
+  <script src="js/outils.js"></script>
+  <script src="js/jeu-amis.js"></script>
+  <script src="js/jeu-course.js"></script>
+  <script src="js/jeu-barres.js"></script>
+  <script src="js/jeu-monstres.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

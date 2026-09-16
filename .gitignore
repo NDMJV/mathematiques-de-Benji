@@ -1,0 +1,11 @@
+# Fichiers créés automatiquement par le système
+.DS_Store
+Thumbs.db
+
+# Éditeurs de code
+.vscode/
+.idea/
+*.swp
+
+# Si un jour on ajoute des outils Node
+node_modules/
