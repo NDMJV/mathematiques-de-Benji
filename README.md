@@ -12,13 +12,64 @@ et du JavaScript. Tu double-cliques sur `index.html` et ça marche.
 
 | Jeu | Ce qu'on y apprend |
 |---|---|
-| 🔟 **Les amis des nombres** | Les compléments à 10 et à 20, avec le *cadre de dix* et le schéma « un tout, deux parties ». La base de tout le calcul mental. |
-| ⚡ **La course aux additions** | Le calcul mental rapide. 60 secondes, et les calculs deviennent plus durs quand on enchaîne les bonnes réponses. |
+| 🔟 **Les amis des nombres** | Les compléments, avec le *cadre de dix* et le schéma « un tout, deux parties ». La base de tout le calcul mental. |
+| ⚡ **La course aux calculs** | Le calcul mental rapide. 60 secondes, et les calculs deviennent plus durs quand on enchaîne les bonnes réponses. |
 | 🍬 **Les barres magiques** | Les *modèles en barres* : on dessine le problème, et la réponse devient évidente. C'est la marque de fabrique de Singapour. |
-| 🐉 **Les monstres gourmands** | La décomposition des nombres : trouver quelle addition donne le bon résultat. |
+| 🐉 **Les monstres gourmands** | La décomposition des nombres : trouver quel calcul donne le bon résultat. |
 
 Chaque partie rapporte de **0 à 3 étoiles ⭐**. Seul le meilleur score de
 chaque jeu est gardé, et il reste en mémoire même si on ferme la page.
+
+---
+
+## 📈 Le jeu grandit avec l'enfant
+
+Chaque jeu a **8 niveaux**, et le jeu se règle tout seul :
+
+- une partie à **90 % ou plus** → on monte d'un niveau
+- une partie à **50 % ou moins** → on redescend d'un niveau
+- entre les deux → on reste, on consolide
+
+Benjamin n'a rien à choisir et ne peut jamais rester bloqué devant une
+porte fermée : le jeu se met à son niveau, tout seul, et s'en souvient
+d'une fois sur l'autre. Le niveau atteint s'affiche sur chaque carte de
+l'accueil.
+
+Les seuils sont regroupés en haut de `js/niveaux.js` si tu veux les
+rendre plus ou moins exigeants :
+
+```js
+SEUIL_MONTEE:   0.90,
+SEUIL_DESCENTE: 0.50,
+```
+
+### Ce qu'on rencontre à chaque niveau
+
+| N° | 🔟 Amis des nombres | ⚡ Course aux calculs |
+|---|---|---|
+| 1 | Les amis de 10 | Additions jusqu'à 10 |
+| 2 | Les amis de 10 et de 20 | Additions jusqu'à 20 |
+| 3 | Les amis de 20 | Plus et moins jusqu'à 20 |
+| 4 | Les amis de 50 | Le passage de la dizaine |
+| 5 | Les dizaines jusqu'à 100 | Jusqu'à 100 |
+| 6 | Les amis de 100 | Les tables de 2, 5 et 10 |
+| 7 | Les amis de 100 et de 200 | Tables et calculs mélangés |
+| 8 | Les amis de 1000 | Le grand mélange (jusqu'à 1000) |
+
+| N° | 🍬 Barres magiques | 🐉 Monstres gourmands |
+|---|---|---|
+| 1 | Petits nombres | Additions jusqu'à 10 |
+| 2 | Comparer | Additions jusqu'à 20 |
+| 3 | Jusqu'à 50 | Plus et moins |
+| 4 | Jusqu'à 100 | Jusqu'à 40 |
+| 5 | Les parts égales (×) | Jusqu'à 100 |
+| 6 | Multiplier | Les tables de 2, 5 et 10 |
+| 7 | Partager (÷) | Toutes les tables |
+| 8 | Les grands nombres | Le grand festin |
+
+Aux petits niveaux, les amis des nombres montrent un **cadre de dix**.
+Au-delà de 20 le cadre n'aurait plus de sens, alors le jeu passe à une
+**barre** : c'est le même raisonnement, avec un dessin adapté.
 
 ---
 
@@ -48,6 +99,7 @@ mathematiques-de-singapour/
 └── js/
     ├── outils.js           ← les fonctions utiles à tous les jeux
     │                         (hasard, mémoire, sons, confettis)
+    ├── niveaux.js          ← les 8 niveaux : montée, descente, mémoire
     ├── jeu-amis.js         ← jeu 1
     ├── jeu-course.js       ← jeu 2
     ├── jeu-barres.js       ← jeu 3

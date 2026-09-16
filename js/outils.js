@@ -36,13 +36,38 @@ function attendre(ms) {
 const Memoire = {
   cle: 'maths-singapour',
 
+  /* Le contenu par défaut, quand on n'a encore jamais joué */
+  vide: function () {
+    return { version: 2, etoiles: {}, niveaux: {} };
+  },
+
   lire: function () {
     try {
       const texte = localStorage.getItem(this.cle);
-      return texte ? JSON.parse(texte) : {};
+      if (!texte) { return this.vide(); }
+      return this.mettreAJour(JSON.parse(texte));
     } catch (erreur) {
-      return {};
+      return this.vide();
     }
+  },
+
+  /* La toute première version du jeu enregistrait simplement
+     { amis: 3, course: 2 }. Si on retrouve cet ancien format, on le
+     convertit au passage : les étoiles déjà gagnées sont conservées. */
+  mettreAJour: function (donnees) {
+    if (!donnees || typeof donnees !== 'object') { return this.vide(); }
+
+    if (donnees.version === 2) {
+      donnees.etoiles = donnees.etoiles || {};
+      donnees.niveaux = donnees.niveaux || {};
+      return donnees;
+    }
+
+    const etoiles = {};
+    for (const jeu in donnees) {
+      if (typeof donnees[jeu] === 'number') { etoiles[jeu] = donnees[jeu]; }
+    }
+    return { version: 2, etoiles: etoiles, niveaux: {} };
   },
 
   ecrire: function (donnees) {
@@ -54,14 +79,14 @@ const Memoire = {
   },
 
   etoilesDe: function (jeu) {
-    return this.lire()[jeu] || 0;
+    return this.lire().etoiles[jeu] || 0;
   },
 
   /* On ne garde que le MEILLEUR score de chaque jeu */
   enregistrerRecord: function (jeu, etoiles) {
     const donnees = this.lire();
-    if (etoiles > (donnees[jeu] || 0)) {
-      donnees[jeu] = etoiles;
+    if (etoiles > (donnees.etoiles[jeu] || 0)) {
+      donnees.etoiles[jeu] = etoiles;
       this.ecrire(donnees);
       return true;                 /* c'est un nouveau record ! */
     }
@@ -69,13 +94,13 @@ const Memoire = {
   },
 
   total: function () {
-    const donnees = this.lire();
+    const etoiles = this.lire().etoiles;
     let somme = 0;
-    for (const jeu in donnees) { somme += donnees[jeu]; }
+    for (const jeu in etoiles) { somme += etoiles[jeu]; }
     return somme;
   },
 
-  effacerTout: function () { this.ecrire({}); }
+  effacerTout: function () { this.ecrire(this.vide()); }
 };
 
 /* =========================================================
@@ -191,4 +216,36 @@ function calculerEtoiles(reussites, total) {
 
 function dessinerEtoiles(nombre) {
   return '⭐'.repeat(nombre) + '☆'.repeat(3 - nombre);
+}
+
+/* =========================================================
+   FABRIQUER UN CALCUL
+   Utilisé par la course et par les monstres. On lui donne les
+   réglages du niveau en cours, il rend un calcul adapté.
+     params.ops    : les opérations permises, ex. ['+', '-', '×']
+     params.max    : le plus grand nombre autorisé
+     params.tables : les tables de multiplication permises
+   ========================================================= */
+function fabriquerCalcul(params) {
+  const operation = auHasardDans(params.ops);
+
+  /* --- Multiplication : on pioche dans les tables du niveau --- */
+  if (operation === '×') {
+    const table = auHasardDans(params.tables);
+    const fois = hasard(2, 10);
+    return { resultat: table * fois, texte: table + ' × ' + fois };
+  }
+
+  /* --- Soustraction : on prend d'abord le grand nombre, pour ne
+         jamais tomber sur un résultat négatif --- */
+  if (operation === '-') {
+    const grand = hasard(Math.ceil(params.max / 3), params.max);
+    const petit = hasard(1, grand);
+    return { resultat: grand - petit, texte: grand + ' − ' + petit };
+  }
+
+  /* --- Addition --- */
+  const a = hasard(1, params.max - 1);
+  const b = hasard(1, params.max - a);
+  return { resultat: a + b, texte: a + ' + ' + b };
 }

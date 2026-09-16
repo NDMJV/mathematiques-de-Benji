@@ -2,6 +2,9 @@
    JEU 4 — LES MONSTRES GOURMANDS
    Chaque monstre a faim d'un nombre. Il faut lui donner
    la bonne assiette de calcul pour le faire grandir !
+
+   Le niveau (1 à 8) décide des opérations sur les assiettes :
+   additions, puis soustractions, puis tables de multiplication.
    ========================================================= */
 
 const JeuMonstres = {
@@ -13,7 +16,19 @@ const JeuMonstres = {
 
   NOMBRE_DE_MONSTRES: 10,
 
+  NIVEAUX: [
+    { nom: 'Additions jusqu\'à 10',    ops: ['+'],           max: 10,  tables: [] },
+    { nom: 'Additions jusqu\'à 20',    ops: ['+'],           max: 20,  tables: [] },
+    { nom: 'Plus et moins',            ops: ['+', '-'],      max: 20,  tables: [] },
+    { nom: 'Jusqu\'à 40',              ops: ['+', '-'],      max: 40,  tables: [] },
+    { nom: 'Jusqu\'à 100',             ops: ['+', '-'],      max: 100, tables: [] },
+    { nom: 'Les tables de 2, 5 et 10', ops: ['×'],           max: 100, tables: [2, 5, 10] },
+    { nom: 'Toutes les tables',        ops: ['×'],           max: 100, tables: [2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { nom: 'Le grand festin',          ops: ['+', '-', '×'], max: 100, tables: [2, 3, 4, 5, 6, 7, 8, 9, 10] }
+  ],
+
   zone: null,
+  niveau: 1,
   numero: 0,
   reussites: 0,
   ventre: 0,              /* combien de friandises mangées */
@@ -21,33 +36,29 @@ const JeuMonstres = {
   peutRepondre: false,
 
   /* ---- Préparer une manche : une faim + trois assiettes ---- */
-  preparerManche: function (niveau) {
-    /* Plus on avance, plus les nombres sont grands */
-    const maxi = niveau < 4 ? 10 : (niveau < 7 ? 20 : 40);
-    const faim = hasard(niveau < 4 ? 4 : 8, maxi);
+  preparerManche: function () {
+    const reglages = this.NIVEAUX[this.niveau - 1];
 
-    /* L'assiette gagnante : deux nombres qui font « faim » */
-    const a = hasard(1, faim - 1);
-    const bonneAssiette = { a: a, b: faim - a, resultat: faim };
+    /* L'assiette gagnante décide de la faim du monstre */
+    const bonneAssiette = fabriquerCalcul(reglages);
+    const faim = bonneAssiette.resultat;
 
     /* Deux assiettes pièges, qui ne tombent PAS sur « faim » */
     const assiettes = [bonneAssiette];
     let securite = 0;
-    while (assiettes.length < 3 && securite < 60) {
+    while (assiettes.length < 3 && securite < 80) {
       securite++;
-      const x = hasard(1, maxi);
-      const y = hasard(1, maxi);
-      const total = x + y;
+      const piege = fabriquerCalcul(reglages);
 
       /* On refuse un piège qui tomberait juste, ou un doublon */
-      if (total === faim) { continue; }
+      if (piege.resultat === faim) { continue; }
       let dejaVu = false;
       for (let i = 0; i < assiettes.length; i++) {
-        if (assiettes[i].resultat === total) { dejaVu = true; }
+        if (assiettes[i].resultat === piege.resultat) { dejaVu = true; }
       }
       if (dejaVu) { continue; }
 
-      assiettes.push({ a: x, b: y, resultat: total });
+      assiettes.push(piege);
     }
 
     return {
@@ -61,6 +72,7 @@ const JeuMonstres = {
   /* ---- Démarrer une partie ---- */
   demarrer: function (zone) {
     this.zone = zone;
+    this.niveau = Niveaux.lire(this.nom);
     this.numero = 0;
     this.reussites = 0;
     this.ventre = 0;
@@ -73,7 +85,7 @@ const JeuMonstres = {
       return;
     }
 
-    this.manche = this.preparerManche(this.numero);
+    this.manche = this.preparerManche();
     const manche = this.manche;
     const avancement = (this.numero / this.NOMBRE_DE_MONSTRES) * 100;
 
@@ -87,13 +99,14 @@ const JeuMonstres = {
     for (let i = 0; i < manche.assiettes.length; i++) {
       const assiette = manche.assiettes[i];
       assiettes += '<button class="assiette" type="button" data-resultat="' + assiette.resultat + '">' +
-                   manche.plat + '<br>' + assiette.a + ' + ' + assiette.b +
+                   manche.plat + '<br>' + assiette.texte +
                    '</button>';
     }
 
     this.zone.innerHTML = '' +
       '<div class="bandeau">' +
         '<span class="pastille">Monstre ' + (this.numero + 1) + ' / ' + this.NOMBRE_DE_MONSTRES + '</span>' +
+        '<span class="pastille">' + etiquetteNiveau(this.niveau, this.NIVEAUX) + '</span>' +
         '<span class="pastille">✅ ' + this.reussites + '</span>' +
       '</div>' +
       '<div class="progression"><div class="progression-remplie" style="width:' + avancement + '%"></div></div>' +
@@ -159,14 +172,16 @@ const JeuMonstres = {
   },
 
   terminer: function () {
-    const etoiles = calculerEtoiles(this.reussites, this.NOMBRE_DE_MONSTRES);
+    const part = this.reussites / this.NOMBRE_DE_MONSTRES;
     afficherFinDePartie(this.zone, {
       jeu: this.nom,
       reussites: this.reussites,
       total: this.NOMBRE_DE_MONSTRES,
-      etoiles: etoiles,
+      etoiles: calculerEtoiles(this.reussites, this.NOMBRE_DE_MONSTRES),
       texte: 'monstres nourris',
-      bonus: 'Friandises distribuées : ' + this.ventre + ' 🍬'
+      bonus: 'Friandises distribuées : ' + this.ventre + ' 🍬',
+      changement: Niveaux.ajuster(this.nom, part),
+      niveaux: this.NIVEAUX
     });
   },
 

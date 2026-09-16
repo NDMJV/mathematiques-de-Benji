@@ -454,3 +454,41 @@ body {
   font-size: .85rem; color: var(--encre-douce); font-weight: bold;
   white-space: nowrap; margin-left: 4px;
 }
+
+/* =========================================================
+   LES NIVEAUX (ajoutés avec le système de progression)
+   ========================================================= */
+
+/* Sur les cartes de l'accueil : étoiles + niveau atteint */
+.carte-bas {
+  margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+.carte-etoiles { margin-top: 0; }
+.carte-niveau {
+  background: var(--violet); color: #fff;
+  border: 2px solid var(--encre); border-radius: 999px;
+  padding: 3px 12px; font-size: .82rem; font-weight: bold;
+}
+
+/* La pastille de niveau dans le bandeau d'un jeu */
+.bandeau .pastille { max-width: 100%; }
+
+/* Le message de changement de niveau, en fin de partie */
+.fin-niveau {
+  font-size: 1.05rem; font-weight: bold; line-height: 1.4;
+  margin: 0 auto 18px; max-width: 30ch;
+  border: 3px solid var(--encre); border-radius: var(--rayon-petit);
+  padding: 10px 14px; background: var(--fond);
+}
+.fin-niveau.monte {
+  background: var(--vert); color: #fff; border-color: #15803d;
+  animation: saute .6s ease;
+}
+.fin-niveau.descend { background: #fff7cd; }
+
+/* Les grands nombres (100, 1000) doivent tenir dans la bulle ronde */
+.bulle.long { font-size: 1.15rem; }
+
+/* Les parts égales du jeu des barres : on garde chaque morceau visible
+   même quand il est tout petit */
+.barre.part { min-width: 26px; font-size: 1rem; }

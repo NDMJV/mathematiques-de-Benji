@@ -2,11 +2,21 @@
    JEU 3 — LES BARRES MAGIQUES
    C'est LE grand truc de la méthode de Singapour : on dessine
    le problème avec des barres, et la réponse saute aux yeux.
+
+   Six familles de problèmes, débloquées au fil des niveaux :
+     tout       — deux parties connues, on cherche le total
+     partie     — le total et une partie, on cherche l'autre
+     deplus     — « ... de plus que ... »
+     difference — « combien de plus ? »
+     fois       — « 3 fois plus que »        (multiplication)
+     partage    — « partagé entre 4 »        (division)
    ========================================================= */
 
 const JeuBarres = {
   nom: 'barres',
   titre: '🍬 Les barres magiques',
+
+  NOMBRE_DE_PROBLEMES: 8,
 
   /* Chaque prénom vient avec son pronom (il / elle) pour que les
      phrases du jeu soient écrites dans un français correct. */
@@ -29,23 +39,46 @@ const JeuBarres = {
     { nom: 'coquillages', partitif: 'de coquillages', emoji: '🐚' }
   ],
 
+  BASE: ['tout', 'partie', 'deplus', 'difference'],
+
+  NIVEAUX: [
+    { nom: 'Petits nombres',     max: 20,   pas: 1,  familles: ['tout', 'partie'] },
+    { nom: 'Comparer',           max: 20,   pas: 1,  familles: ['tout', 'partie', 'deplus', 'difference'] },
+    { nom: 'Jusqu\'à 50',        max: 50,   pas: 1,  familles: ['tout', 'partie', 'deplus', 'difference'] },
+    { nom: 'Jusqu\'à 100',       max: 100,  pas: 1,  familles: ['tout', 'partie', 'deplus', 'difference'] },
+    { nom: 'Les parts égales',   max: 50,   pas: 1,  familles: ['tout', 'deplus', 'fois'] },
+    { nom: 'Multiplier',         max: 100,  pas: 1,  familles: ['tout', 'partie', 'difference', 'fois'] },
+    { nom: 'Partager',           max: 100,  pas: 1,  familles: ['difference', 'fois', 'partage'] },
+    { nom: 'Les grands nombres', max: 1000, pas: 10, familles: ['tout', 'partie', 'deplus', 'difference', 'partage'] }
+  ],
+
   zone: null,
+  niveau: 1,
   problemes: [],
   numero: 0,
   reussites: 0,
   peutRepondre: false,
 
-  /* ---- Choisir deux prénoms différents ---- */
+  /* ---- Un nombre au hasard, arrondi au pas du niveau ---- */
+  nombre: function (min, max, pas) {
+    const bas = Math.max(1, Math.ceil(min / pas));
+    const haut = Math.max(bas, Math.floor(max / pas));
+    return hasard(bas, haut) * pas;
+  },
+
   deuxPrenoms: function () {
     const melange = melanger(this.PRENOMS);
     return [melange[0], melange[1]];
   },
 
   /* =======================================================
-     Fabriquer un problème. Il y a 4 familles de problèmes,
-     ce sont les 4 grands classiques de la méthode.
+     Fabriquer un problème d'une famille donnée
      ======================================================= */
-  fabriquerProbleme: function (famille) {
+  fabriquerProbleme: function (famille, reglages) {
+    reglages = reglages || this.NIVEAUX[0];
+    const max = reglages.max;
+    const pas = reglages.pas;
+
     const prenoms = this.deuxPrenoms();
     const a = prenoms[0];
     const b = prenoms[1];
@@ -53,8 +86,8 @@ const JeuBarres = {
 
     /* --- 1. On connaît les deux parties, on cherche le tout --- */
     if (famille === 'tout') {
-      const p1 = hasard(3, 14);
-      const p2 = hasard(3, 14);
+      const p1 = this.nombre(2, max / 2, pas);
+      const p2 = this.nombre(2, max / 2, pas);
       return {
         enonce: a.nom + ' a ' + p1 + ' ' + objet.nom + ' ' + objet.emoji + '. ' +
                 b.nom + ' en a ' + p2 + '. Combien y a-t-il ' + objet.partitif +
@@ -73,8 +106,8 @@ const JeuBarres = {
 
     /* --- 2. On connaît le tout et une partie, on cherche l'autre --- */
     if (famille === 'partie') {
-      const tout = hasard(10, 20);
-      const p1 = hasard(3, tout - 3);
+      const tout = this.nombre(max / 2, max, pas);
+      const p1 = this.nombre(pas, tout - pas, pas);
       return {
         enonce: 'Il y a ' + tout + ' ' + objet.nom + ' ' + objet.emoji + ' dans la boîte. ' +
                 a.nom + ' en prend ' + p1 + '. Combien en <strong>reste-t-il</strong> ?',
@@ -92,8 +125,8 @@ const JeuBarres = {
 
     /* --- 3. Comparaison : « ... de plus que ... » --- */
     if (famille === 'deplus') {
-      const petit = hasard(4, 13);
-      const ecart = hasard(2, 8);
+      const petit = this.nombre(3, max / 2, pas);
+      const ecart = this.nombre(2, max / 4, pas);
       return {
         enonce: a.nom + ' a ' + petit + ' ' + objet.nom + ' ' + objet.emoji + '. ' +
                 b.nom + ' en a ' + ecart + ' <strong>de plus</strong> que ' + a.nom + '. ' +
@@ -112,34 +145,77 @@ const JeuBarres = {
     }
 
     /* --- 4. Comparaison : « combien de plus ? » --- */
-    const grand = hasard(9, 20);
-    const petit = hasard(3, grand - 2);
+    if (famille === 'difference') {
+      const grand = this.nombre(max / 2, max, pas);
+      const petit = this.nombre(pas, grand - pas, pas);
+      return {
+        enonce: a.nom + ' a ' + grand + ' ' + objet.nom + ' ' + objet.emoji + ' et ' +
+                b.nom + ' en a ' + petit + '. Combien ' + a.nom + ' en a-t-' + a.pronom +
+                ' <strong>de plus</strong> ?',
+        reponse: grand - petit,
+        barres: [
+          { type: 'duo', etiquette: a.nom,
+            gauche: { valeur: petit, couleur: 'bleue' },
+            droite: { valeur: grand - petit, couleur: 'inconnue' } },
+          { type: 'simple', etiquette: b.nom, valeur: petit, couleur: 'jaune' }
+        ],
+        accolade: null,
+        max: grand,
+        astuce: 'On compare les deux barres : le bout qui dépasse, c\'est la réponse.'
+      };
+    }
+
+    /* --- 5. Multiplication : « 3 fois plus que » --- */
+    if (famille === 'fois') {
+      const facteur = hasard(2, 5);
+      const unite = this.nombre(2, Math.max(3, max / facteur), pas);
+      return {
+        enonce: a.nom + ' a ' + unite + ' ' + objet.nom + ' ' + objet.emoji + '. ' +
+                b.nom + ' en a <strong>' + facteur + ' fois plus</strong>. ' +
+                'Combien ' + b.nom + ' en a-t-' + b.pronom + ' ?',
+        reponse: unite * facteur,
+        barres: [
+          { type: 'simple', etiquette: a.nom, valeur: unite, couleur: 'bleue' },
+          { type: 'parts', etiquette: b.nom, nombre: facteur,
+            unite: unite, couleur: 'rose', inconnu: false }
+        ],
+        accolade: null,
+        max: unite * facteur,
+        astuce: facteur + ' barres de ' + unite + ', c\'est ' + unite + ' × ' + facteur + '.'
+      };
+    }
+
+    /* --- 6. Division : on partage en parts égales --- */
+    const parts = hasard(2, 5);
+    const chacun = this.nombre(2, Math.max(3, max / parts), pas);
+    const tout = chacun * parts;
     return {
-      enonce: a.nom + ' a ' + grand + ' ' + objet.nom + ' ' + objet.emoji + ' et ' +
-              b.nom + ' en a ' + petit + '. Combien ' + a.nom + ' en a-t-' + a.pronom +
-              ' <strong>de plus</strong> ?',
-      reponse: grand - petit,
+      enonce: 'On partage ' + tout + ' ' + objet.nom + ' ' + objet.emoji +
+              ' <strong>entre ' + parts + ' enfants</strong>, en parts égales. ' +
+              'Combien chacun en aura-t-il ?',
+      reponse: chacun,
       barres: [
-        { type: 'duo', etiquette: a.nom,
-          gauche: { valeur: petit, couleur: 'bleue' },
-          droite: { valeur: grand - petit, couleur: 'inconnue' } },
-        { type: 'simple', etiquette: b.nom, valeur: petit, couleur: 'jaune' }
+        { type: 'parts', etiquette: 'Chacun', nombre: parts,
+          unite: chacun, couleur: 'jaune', inconnu: true }
       ],
-      accolade: null,
-      max: grand,
-      astuce: 'On compare les deux barres : le bout qui dépasse, c\'est la réponse.'
+      accolade: tout + ' en tout, en ' + parts + ' parts',
+      max: tout,
+      astuce: 'La barre de ' + tout + ' coupée en ' + parts + ' morceaux égaux.'
     };
   },
 
-  /* ---- Préparer 8 problèmes variés ---- */
+  /* ---- Préparer les problèmes de la partie ---- */
   preparerProblemes: function () {
-    const familles = melanger(['tout', 'partie', 'deplus', 'difference',
-                               'tout', 'partie', 'deplus', 'difference']);
+    const reglages = this.NIVEAUX[this.niveau - 1];
     const liste = [];
-    for (let i = 0; i < familles.length; i++) {
-      liste.push(this.fabriquerProbleme(familles[i]));
+
+    /* On passe en revue les familles du niveau, en boucle, pour que
+       toutes soient représentées à peu près également. */
+    const tournee = melanger(reglages.familles);
+    for (let i = 0; i < this.NOMBRE_DE_PROBLEMES; i++) {
+      liste.push(this.fabriquerProbleme(tournee[i % tournee.length], reglages));
     }
-    return liste;
+    return melanger(liste);
   },
 
   /* ---- Dessiner les barres ---- */
@@ -156,6 +232,16 @@ const JeuBarres = {
         const largeur = (ligne.valeur / probleme.max) * 100;
         html += '<span class="barre ' + ligne.couleur + '" style="width:' + largeur + '%">' +
                 ligne.valeur + '</span>';
+
+      } else if (ligne.type === 'parts') {
+        /* Plusieurs morceaux tous de la même taille */
+        const largeur = (ligne.unite / probleme.max) * 100;
+        const texte = (ligne.inconnu && !montrerReponse) ? '?' : ligne.unite;
+        for (let p = 0; p < ligne.nombre; p++) {
+          html += '<span class="barre ' + ligne.couleur + ' part" style="width:' + largeur + '%">' +
+                  texte + '</span>';
+        }
+
       } else {
         const largeurG = (ligne.gauche.valeur / probleme.max) * 100;
         const largeurD = (ligne.droite.valeur / probleme.max) * 100;
@@ -181,13 +267,14 @@ const JeuBarres = {
   },
 
   /* ---- Fabriquer 4 choix de réponse ---- */
-  fabriquerChoix: function (bonne) {
+  fabriquerChoix: function (bonne, pas) {
+    pas = pas || 1;
     const choix = [bonne];
-    const ecarts = melanger([1, 2, 3, -1, -2, -3, 10, -10]);
+    const ecarts = melanger([pas, -pas, pas * 2, -pas * 2, 10, -10, 1, -1]);
 
     for (let i = 0; i < ecarts.length && choix.length < 4; i++) {
       const valeur = bonne + ecarts[i];
-      if (valeur >= 0 && choix.indexOf(valeur) === -1) { choix.push(valeur); }
+      if (valeur > 0 && choix.indexOf(valeur) === -1) { choix.push(valeur); }
     }
     return melanger(choix);
   },
@@ -195,6 +282,7 @@ const JeuBarres = {
   /* ---- Démarrer une partie ---- */
   demarrer: function (zone) {
     this.zone = zone;
+    this.niveau = Niveaux.lire(this.nom);
     this.problemes = this.preparerProblemes();
     this.numero = 0;
     this.reussites = 0;
@@ -208,7 +296,8 @@ const JeuBarres = {
     }
 
     const probleme = this.problemes[this.numero];
-    const choix = this.fabriquerChoix(probleme.reponse);
+    const pas = this.NIVEAUX[this.niveau - 1].pas;
+    const choix = this.fabriquerChoix(probleme.reponse, pas);
     const avancement = (this.numero / this.problemes.length) * 100;
 
     let boutons = '';
@@ -219,6 +308,7 @@ const JeuBarres = {
     this.zone.innerHTML = '' +
       '<div class="bandeau">' +
         '<span class="pastille">Problème ' + (this.numero + 1) + ' / ' + this.problemes.length + '</span>' +
+        '<span class="pastille">' + etiquetteNiveau(this.niveau, this.NIVEAUX) + '</span>' +
         '<span class="pastille">✅ ' + this.reussites + '</span>' +
       '</div>' +
       '<div class="progression"><div class="progression-remplie" style="width:' + avancement + '%"></div></div>' +
@@ -284,13 +374,15 @@ const JeuBarres = {
   },
 
   terminer: function () {
-    const etoiles = calculerEtoiles(this.reussites, this.problemes.length);
+    const part = this.reussites / this.problemes.length;
     afficherFinDePartie(this.zone, {
       jeu: this.nom,
       reussites: this.reussites,
       total: this.problemes.length,
-      etoiles: etoiles,
-      texte: 'problèmes résolus'
+      etoiles: calculerEtoiles(this.reussites, this.problemes.length),
+      texte: 'problèmes résolus',
+      changement: Niveaux.ajuster(this.nom, part),
+      niveaux: this.NIVEAUX
     });
   },
 

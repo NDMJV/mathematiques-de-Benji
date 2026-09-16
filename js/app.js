@@ -36,7 +36,7 @@ const App = {
     /* Le bouton « Tout recommencer » */
     document.getElementById('bouton-remise-a-zero')
             .addEventListener('click', function () {
-              if (confirm('Effacer toutes les étoiles et recommencer à zéro ?')) {
+              if (confirm('Effacer toutes les étoiles ET revenir au niveau 1 partout ?')) {
                 Memoire.effacerTout();
                 app.rafraichirEtoiles();
               }
@@ -100,6 +100,15 @@ const App = {
       const jeu = pastilles[i].dataset.etoiles;
       pastilles[i].textContent = '⭐ ' + Memoire.etoilesDe(jeu);
     }
+
+    /* Le niveau atteint dans chaque jeu */
+    const niveaux = document.querySelectorAll('[data-niveau]');
+    for (let i = 0; i < niveaux.length; i++) {
+      const jeu = niveaux[i].dataset.niveau;
+      const numero = Niveaux.lire(jeu);
+      const liste = this.JEUX[jeu].NIVEAUX;
+      niveaux[i].textContent = 'N' + numero + ' · ' + liste[numero - 1].nom;
+    }
   }
 };
 
@@ -130,6 +139,7 @@ function afficherFinDePartie(zone, infos) {
       (infos.bonus ? '<p class="fin-score">' + infos.bonus + '</p>' : '') +
       (nouveauRecord && infos.etoiles > 0 ? '<p class="fin-score">✨ Nouveau record ! ✨</p>' : '') +
       '<div class="fin-etoiles">' + dessinerEtoiles(infos.etoiles) + '</div>' +
+      bandeauDeNiveau(infos) +
       '<div class="boutons-fin">' +
         '<button class="bouton-gros" id="bouton-rejouer" type="button">🔄 Rejouer</button>' +
         '<button class="bouton-gros secondaire" id="bouton-accueil" type="button">🏠 Accueil</button>' +
@@ -150,6 +160,20 @@ function afficherFinDePartie(zone, infos) {
   document.getElementById('bouton-accueil').addEventListener('click', function () {
     App.retourAccueil();
   });
+}
+
+/* =========================================================
+   Le bandeau de niveau affiché en fin de partie
+   ========================================================= */
+function bandeauDeNiveau(infos) {
+  if (!infos.changement || !infos.niveaux) { return ''; }
+
+  const changement = infos.changement;
+  const nomDuNiveau = infos.niveaux[changement.apres - 1].nom;
+
+  return '<p class="fin-niveau ' + changement.sens + '">' +
+         Niveaux.message(changement, nomDuNiveau) +
+         '</p>';
 }
 
 /* On lance tout quand la page est prête */

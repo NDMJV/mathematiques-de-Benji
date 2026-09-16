@@ -1,15 +1,31 @@
 /* =========================================================
-   JEU 2 — LA COURSE AUX ADDITIONS
+   JEU 2 — LA COURSE AUX CALCULS
    60 secondes pour réussir le plus de calculs possible.
-   Plus la série de bonnes réponses est longue, plus les
-   calculs deviennent costauds.
+
+   Deux vitesses de progression :
+     - le NIVEAU (1 à 8), gardé en mémoire d'une partie à l'autre,
+       qui décide des opérations et de la taille des nombres
+     - la SÉRIE en cours, qui pousse temporairement d'un cran
+       quand Benjamin enchaîne les bonnes réponses
    ========================================================= */
 
 const JeuCourse = {
   nom: 'course',
-  titre: '⚡ La course aux additions',
+  titre: '⚡ La course aux calculs',
 
   DUREE: 60,              /* la partie dure 60 secondes */
+
+  /* Les 8 niveaux. « objectif » = le score qui vaut un sans-faute. */
+  NIVEAUX: [
+    { nom: 'Additions jusqu\'à 10',   ops: ['+'],           max: 10,   tables: [],                          objectif: 15 },
+    { nom: 'Additions jusqu\'à 20',   ops: ['+'],           max: 20,   tables: [],                          objectif: 15 },
+    { nom: 'Plus et moins jusqu\'à 20', ops: ['+', '-'],    max: 20,   tables: [],                          objectif: 14 },
+    { nom: 'Le passage de la dizaine', ops: ['+', '-'],     max: 50,   tables: [],                          objectif: 12 },
+    { nom: 'Jusqu\'à 100',            ops: ['+', '-'],      max: 100,  tables: [],                          objectif: 11 },
+    { nom: 'Les tables de 2, 5 et 10', ops: ['×'],          max: 100,  tables: [2, 5, 10],                  objectif: 12 },
+    { nom: 'Tables et calculs',       ops: ['+', '-', '×'], max: 100,  tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], objectif: 10 },
+    { nom: 'Le grand mélange',        ops: ['+', '-', '×'], max: 1000, tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], objectif: 9 }
+  ],
 
   zone: null,
   chrono: null,           /* le "minuteur" qui tourne chaque seconde */
@@ -17,33 +33,22 @@ const JeuCourse = {
   score: 0,
   serie: 0,               /* nombre de bonnes réponses d'affilée */
   meilleureSerie: 0,
+  niveau: 1,
   calcul: null,
   saisie: '',
 
-  /* ---- Fabriquer un calcul adapté à la série en cours ---- */
-  fabriquerCalcul: function () {
-    let a, b;
-
-    if (this.serie < 3) {
-      /* Niveau 1 : le total ne dépasse pas 10 */
-      a = hasard(1, 8);
-      b = hasard(1, 10 - a);
-    } else if (this.serie < 7) {
-      /* Niveau 2 : le total ne dépasse pas 20 */
-      a = hasard(2, 14);
-      b = hasard(2, 20 - a);
-    } else {
-      /* Niveau 3 : on passe la dizaine, comme en CE1 */
-      a = hasard(11, 45);
-      b = hasard(6, 30);
-    }
-
-    return { a: a, b: b, resultat: a + b };
+  /* ---- Les réglages à utiliser maintenant ---- */
+  reglages: function () {
+    /* Une série de 5 bonnes réponses fait goûter au niveau du dessus */
+    const bonus = this.serie >= 5 ? 1 : 0;
+    const indice = Math.min(this.niveau - 1 + bonus, this.NIVEAUX.length - 1);
+    return this.NIVEAUX[indice];
   },
 
   /* ---- Démarrer une partie ---- */
   demarrer: function (zone) {
     this.zone = zone;
+    this.niveau = Niveaux.lire(this.nom);
     this.tempsRestant = this.DUREE;
     this.score = 0;
     this.serie = 0;
@@ -70,6 +75,7 @@ const JeuCourse = {
     this.zone.innerHTML = '' +
       '<div class="bandeau">' +
         '<span class="pastille" id="course-temps">⏱️ ' + this.DUREE + ' s</span>' +
+        '<span class="pastille">' + etiquetteNiveau(this.niveau, this.NIVEAUX) + '</span>' +
         '<span class="pastille" id="course-score">🏆 0</span>' +
       '</div>' +
       '<p class="serie" id="course-serie">&nbsp;</p>' +
@@ -110,7 +116,7 @@ const JeuCourse = {
       if (this.saisie !== '') { this.verifier(); }
       return;
     } else {
-      if (this.saisie.length >= 3) { return; }   /* 3 chiffres maximum */
+      if (this.saisie.length >= 4) { return; }   /* 4 chiffres maximum */
       this.saisie += touche;
       Sons.clic();
     }
@@ -171,17 +177,17 @@ const JeuCourse = {
 
   /* ---- Afficher le calcul suivant ---- */
   calculSuivant: function () {
-    this.calcul = this.fabriquerCalcul();
+    this.calcul = fabriquerCalcul(this.reglages());
     this.saisie = '';
 
     const affichage = document.getElementById('course-calcul');
     const reaction = document.getElementById('course-reaction');
-    if (affichage) { affichage.textContent = this.calcul.a + ' + ' + this.calcul.b + ' = ?'; }
+    if (affichage) { affichage.textContent = this.calcul.texte + ' = ?'; }
     if (reaction)  { reaction.textContent = ''; }
 
     this.afficherSaisie();
     this.rafraichirBandeau();
-    annoncer(this.calcul.a + ' plus ' + this.calcul.b);
+    annoncer(this.calcul.texte);
   },
 
   rafraichirBandeau: function () {
@@ -216,11 +222,14 @@ const JeuCourse = {
   terminer: function () {
     this.arreter();
 
-    /* Ici les étoiles dépendent du nombre de calculs réussis */
+    /* On compare le score à l'objectif du niveau en cours */
+    const objectif = this.NIVEAUX[this.niveau - 1].objectif;
+    const part = Math.min(1, this.score / objectif);
+
     let etoiles = 0;
-    if (this.score >= 20)      { etoiles = 3; }
-    else if (this.score >= 12) { etoiles = 2; }
-    else if (this.score >= 6)  { etoiles = 1; }
+    if (part >= 0.9)      { etoiles = 3; }
+    else if (part >= 0.6) { etoiles = 2; }
+    else if (part >= 0.3) { etoiles = 1; }
 
     afficherFinDePartie(this.zone, {
       jeu: this.nom,
@@ -228,7 +237,9 @@ const JeuCourse = {
       total: null,
       etoiles: etoiles,
       texte: 'calculs réussis',
-      bonus: 'Meilleure série : ' + this.meilleureSerie + ' 🔥'
+      bonus: 'Meilleure série : ' + this.meilleureSerie + ' 🔥',
+      changement: Niveaux.ajuster(this.nom, part),
+      niveaux: this.NIVEAUX
     });
   },
 
