@@ -2,11 +2,10 @@
    JEU 2 — LA COURSE AUX CALCULS
    60 secondes pour réussir le plus de calculs possible.
 
-   Deux vitesses de progression :
-     - le NIVEAU (1 à 8), gardé en mémoire d'une partie à l'autre,
-       qui décide des opérations et de la taille des nombres
-     - la SÉRIE en cours, qui pousse temporairement d'un cran
-       quand Benji enchaîne les bonnes réponses
+   Le NIVEAU (1 à 8) est gardé en mémoire d'une partie à l'autre : il
+   décide des opérations et de la taille des nombres. La série de bonnes
+   réponses, elle, ne change PAS la difficulté — elle rapporte des
+   confettis et s'affiche en 🔥, rien de plus.
    ========================================================= */
 
 const JeuCourse = {
@@ -37,12 +36,15 @@ const JeuCourse = {
   calcul: null,
   saisie: '',
 
-  /* ---- Les réglages à utiliser maintenant ---- */
+  /* ---- Les réglages du niveau en cours ----
+     Une version précédente donnait un bonus de difficulté après 5 bonnes
+     réponses d'affilée. C'était une erreur : l'écran continuait d'annoncer
+     « Additions jusqu'à 10 » pendant que le jeu servait des calculs allant
+     jusqu'à 20. Et depuis que les niveaux existent, ce bonus fait doublon :
+     une bonne partie fait monter de niveau à la fin. Ce que l'étiquette
+     annonce est maintenant exactement ce que le jeu propose. */
   reglages: function () {
-    /* Une série de 5 bonnes réponses fait goûter au niveau du dessus */
-    const bonus = this.serie >= 5 ? 1 : 0;
-    const indice = Math.min(this.niveau - 1 + bonus, this.NIVEAUX.length - 1);
-    return this.NIVEAUX[indice];
+    return this.NIVEAUX[this.niveau - 1];
   },
 
   /* ---- Démarrer une partie ---- */
