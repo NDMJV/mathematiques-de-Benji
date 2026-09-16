@@ -22,11 +22,23 @@
   --rayon-petit:     14px;
   --ombre:           0 6px 0 rgba(31, 42, 68, .15);
   --ombre-haute:     0 10px 30px rgba(31, 42, 68, .18);
-  --police: "Comic Sans MS", "Chalkboard SE", "Segoe UI Rounded",
-            "Trebuchet MS", system-ui, -apple-system, sans-serif;
+  /* Deux polices arrondies, très lisibles pour un lecteur débutant.
+     Si les polices Google ne se chargent pas (pas d'internet), on
+     retombe sur Comic Sans : le jeu reste parfaitement lisible. */
+  --police: "Nunito", "Comic Sans MS", "Chalkboard SE",
+            "Segoe UI Rounded", "Trebuchet MS", system-ui, sans-serif;
+  --police-titre: "Fredoka", "Comic Sans MS", "Chalkboard SE",
+                  "Segoe UI Rounded", "Trebuchet MS", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Tout ce qui est titre ou gros chiffre prend la police d'affichage */
+.accueil-entete h1, .carte-titre, .titre-jeu, .consigne, .pastille,
+.calcul-geant, .ecran-saisie, .bulle, .barre, .bouton-reponse,
+.touche, .assiette, .fin-titre, .bulle-parole, .bouton-gros {
+  font-family: var(--police-titre);
+}
 
 body {
   font-family: var(--police);
@@ -37,7 +49,8 @@ body {
     radial-gradient(circle at 78% 88%, rgba(236, 72, 153, .10) 0 24%, transparent 24%);
   color: var(--encre);
   min-height: 100vh;
-  padding: 16px;
+  padding-block: 16px;
+  padding-inline: 16px;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -76,7 +89,10 @@ body {
    ÉCRANS
    ========================================================= */
 .ecran { display: none; }
-.ecran.active { display: block; animation: apparition .3s ease; }
+.ecran.active { display: block; }
+/* L'animation ne sert QUE quand on change d'écran en cours de jeu.
+   Au tout premier chargement, la page s'affiche déjà en place. */
+.ecran.active.anime { animation: apparition .3s ease; }
 
 @keyframes apparition {
   from { opacity: 0; transform: translateY(14px); }
@@ -415,7 +431,7 @@ body {
    PETITS ÉCRANS
    ========================================================= */
 @media (max-width: 480px) {
-  body       { padding: 12px; }
+  body       { padding-inline: 12px; }
   .zone-jeu  { padding: 20px 14px; }
   .bulle     { width: 64px; height: 64px; font-size: 1.6rem; }
   .branches  { gap: 38px; }

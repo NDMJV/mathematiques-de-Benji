@@ -80,9 +80,11 @@ const App = {
   afficherEcran: function (identifiant) {
     const ecrans = document.querySelectorAll('.ecran');
     for (let i = 0; i < ecrans.length; i++) {
-      ecrans[i].classList.remove('active');
+      ecrans[i].classList.remove('active', 'anime');
     }
-    document.getElementById(identifiant).classList.add('active');
+    /* « anime » déclenche le petit fondu d'apparition. On ne le met
+       qu'ici : au premier chargement, l'accueil s'affiche sans fondu. */
+    document.getElementById(identifiant).classList.add('active', 'anime');
     window.scrollTo(0, 0);
   },
 
