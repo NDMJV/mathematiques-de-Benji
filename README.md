@@ -89,11 +89,55 @@ Puis va sur http://localhost:8000 dans ton navigateur.
 
 ---
 
+## 📱 Installer sur une tablette (et jouer sans internet)
+
+Le jeu est une **PWA** : il s'installe comme une vraie application, avec
+son icône sur l'écran d'accueil, en plein écran, et il marche sans
+connexion.
+
+**Sur Android (Chrome)**
+1. Ouvre https://ndmjv.github.io/mathematiques-de-Benji/
+2. Menu ⋮ → **Installer l'application**
+
+**Sur iPad / iPhone — dans Safari obligatoirement** (Chrome sur iOS ne
+sait pas installer de PWA)
+1. Ouvre la même adresse dans **Safari**
+2. Bouton Partager ⬆️ → **Sur l'écran d'accueil**
+
+Une fois installé :
+
+- une icône « Maths Benji » sur l'écran d'accueil
+- plein écran, **sans barre d'adresse** : l'enfant ne peut pas partir
+  ailleurs d'un coup de doigt
+- **jouable en avion, en voiture, sans wifi**
+- les étoiles et les niveaux restent gardés sur l'appareil
+
+> ⚠️ Il faut **une première ouverture avec internet** pour que la tablette
+> télécharge le jeu. Après, plus jamais besoin de réseau.
+
+### Comment les mises à jour arrivent
+
+Le fichier `sw.js` applique la règle « on sert le cache, et on remplit le
+cache » : la page s'affiche instantanément depuis la mémoire de
+l'appareil, et **en même temps** le jeu télécharge la version à jour en
+arrière-plan, si le réseau est là.
+
+Conséquence à connaître : après avoir poussé du code, il faut ouvrir le
+jeu **deux fois** pour voir le changement. La première ouverture affiche
+l'ancienne version et télécharge la neuve ; la deuxième l'affiche. C'est
+le prix du hors ligne — le jeu ne demande rien au réseau avant de
+s'afficher, donc il ne peut pas attendre la réponse.
+
+---
+
 ## 📁 Comment le projet est rangé
 
 ```
 mathematiques-de-singapour/
 ├── index.html              ← la page : les 5 écrans du jeu
+├── manifest.json           ← la fiche d'identité de l'application
+├── sw.js                   ← le « service worker » : le mode hors ligne
+├── icones/                 ← les icônes de l'écran d'accueil
 ├── css/
 │   └── styles.css          ← toutes les couleurs et les formes
 └── js/

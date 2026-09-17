@@ -6,6 +6,16 @@
   <title>Les maths de Benji</title>
   <meta name="description" content="Quatre jeux pour apprendre les maths avec la méthode de Singapour.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+  <!-- PWA:début — ce bloc est retiré de la version publiée sur claude.ai,
+       qui n'a pas ces fichiers. Il ne sert qu'au site GitHub Pages. -->
+  <meta name="theme-color" content="#8b5cf6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Maths Benji">
+  <!-- PWA:fin -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
@@ -91,5 +101,21 @@
   <script src="js/jeu-barres.js"></script>
   <script src="js/jeu-monstres.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- PWA:début -->
+  <script>
+    /* On installe le « service worker ». C'est lui qui garde le jeu en
+       mémoire sur l'appareil et le rend jouable sans internet, une fois
+       la page ouverte une première fois. */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () {
+          /* Refusé (page ouverte en file://, navigation privée, ...) :
+             le jeu marche quand même, simplement sans le mode hors ligne. */
+        });
+      });
+    }
+  </script>
+  <!-- PWA:fin -->
 </body>
 </html>
